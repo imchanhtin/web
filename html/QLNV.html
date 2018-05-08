@@ -1,0 +1,202 @@
+
+<html>
+    <head>
+        <title>Quản lý Nhân viên</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/qlsv.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <script>
+            var xmlhttp = new XMLHttpRequest();
+            var thongdieps;
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+            }
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+            }
+            function themNV() {
+                var manv = document.getElementById("manv").value;
+                var hoten = document.getElementById("hoten").value;
+                var gioitinh = document.getElementById("gioitinh").value;
+                var ngaysinh = document.getElementById("ngaysinh").value;
+                var sdt = document.getElementById("sdt").value;
+                var chucvu = document.getElementById("chucvu").value;
+                var luong = document.getElementById("luong").value;
+                if (manv == "" || hoten == "" || gioitinh == "" || ngaysinh == "" || sdt == "" || chucvu == "" || luong == "") {
+                    alert("Bạn chưa nhập đủ thông tin");
+                } else {
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                    xmlhttp.open("get", "../jsp/themNV.jsp?manv=" + manv + "&hoten=" + hoten + "&gioitinh=" + gioitinh + "&ngaysinh=" + ngaysinh + "&sdt=" + sdt + "&chucvu=" + chucvu + "&luong=" + luong, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về;
+                    alert(xmlhttp.responseText.trim());
+                    themtaikhoan();
+                }
+            }
+            function themtaikhoan()
+            {
+                var manv = document.getElementById("manv").value;
+                var sdt = document.getElementById("sdt").value;
+                if (manv == "" || sdt == "") {
+                    alert("Bạn chưa nhập đủ thông tin");
+                } else {
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                    xmlhttp.open("get", "../jsp/themtaikhoan.jsp?manv=" + manv + "&sdt=" + sdt, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+
+                }
+            }
+            function hienthiNV() {
+                var table = "";
+                xmlhttp.open("get", "../jsp/hienthiNV.jsp", false);
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                table += "<table border=1>";
+                table += "<tr><th></th><th><th>Mã NV</th><th>Họ Tên</th><th>Giới Tính</th>"
+                        + "<th>Ngày Sinh</th><th>Số Điện Thoại</th><th>Chức Vụ</th><th>Lương</th></tr>";
+                for (var i = 0; i < thongdieps.length; i++) {
+                    table += "<tr>" + "<td ><input type=\"checkbox\" name=\"check\" id=\"" + thongdieps[i].manv + "\"> </td>" + "<td ><input type=\"radio\" name=\"radio\" value=\"" + thongdieps[i].manv + "\" onclick=\"xemtt1NV('" + thongdieps[i].manv + "')\"> </td>"
+                            + "<td >" + thongdieps[i].manv + "</td>"
+                            + "<td >" + thongdieps[i].hoten + "</td>"
+                            + "<td>" + thongdieps[i].gioitinh + "</td>"
+                            + "<td>" + thongdieps[i].ngaysinh + "</td>"
+                            + "<td>" + thongdieps[i].sdt + "</td>"
+                            + "<td>" + thongdieps[i].chucvu + "</td>"
+                            + "<td>" + thongdieps[i].luong + "</td>"
+                }
+                table += "</table>";
+                document.getElementById("noidung1").innerHTML = table;
+            }
+            function xoaNV() {
+                if (sessionStorage.userid == "0")
+                    alert("Ban khong co quyen xoa!");
+                else if (sessionStorage.userid == "1") {
+                    var DSNV = document.getElementsByName("check");
+                    var DSString = "";
+                    var dem = 0;
+                    for (var i = 0; i < DSNV.length; i++)
+                    {
+                        if (DSNV[i].checked)
+                        {
+                            if (dem == 0)
+                            {
+                                DSString += "manv" + dem + "=" + DSNV[i].id.trim();
+                            } else
+                            {
+                                DSString += "&manv" + dem + "=" + DSNV[i].id.trim();
+                            }
+                            dem++;
+                        }
+                    }
+                    DSString += "&dem=" + dem;
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                    xmlhttp.open("get", "../jsp/xoaNV.jsp?" + DSString, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                }
+            }
+            function xemtt1NV(manv) {
+                sessionStorage.nvdangsua = manv;
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                xmlhttp.open("get", "../jsp/hienthi1NV.jsp?manv=" + manv, false);
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                document.getElementById("manv").setAttribute("value", thongdieps[0].manv);
+                document.getElementById("hoten").setAttribute("value", thongdieps[0].hoten);
+                document.getElementById("gioitinh").setAttribute("value", thongdieps[0].gioitinh);
+                document.getElementById("ngaysinh").setAttribute("value", thongdieps[0].ngaysinh);
+                document.getElementById("sdt").setAttribute("value", thongdieps[0].sdt);
+                document.getElementById("chucvu").setAttribute("value", thongdieps[0].chucvu);
+                document.getElementById("luong").setAttribute("value", thongdieps[0].luong);
+
+            }
+            function suaTT()
+            {
+                var manv = document.getElementById("manv").value;
+                var hoten = document.getElementById("hoten").value;
+                var gioitinh = document.getElementById("gioitinh").value;
+                var ngaysinh = document.getElementById("ngaysinh").value;
+                var sdt = document.getElementById("sdt").value;
+                var chucvu = document.getElementById("chucvu").value;
+                var luong = document.getElementById("luong").value;
+
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                xmlhttp.open("get", "../jsp/suaNV.jsp?manv=" + manv + "&manvcu=" + sessionStorage.nvdangsua + "&hoten=" + hoten + "&gioitinh=" + gioitinh + "&ngaysinh=" + ngaysinh + "&sdt=" + sdt + "&chucvu=" + chucvu + "&luong=" + luong, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+                //Nhận thông báo từ file JSP gửi về
+
+                alert(xmlhttp.responseText.trim());
+            }
+            function dangxuat() {
+                sessionStorage.username = "undefined";
+                sessionStorage.userid = "-1";
+            }
+        </script>
+    </head>
+    <body>
+        <div>				<!-- Phần header -->
+            <div id="header1">
+                <span><a href="trangchu.html"><button id="back"></button></a></span>
+                <span><p id="eff6">Thông tin nhân viên</p></span>
+            </div>
+            <div id="header2">
+                <p id="usernamelogin"></p>
+                <div id="usernamelogin" style="float: left; margin-top: 20px;">Xin chào</div>  
+                <div class="topnav" id="myTopnav" style="float: right;">
+                    <a href="dangnhap.html" onclick="dangxuat()">Đăng xuất</a>
+                </div>
+            </div>
+        </div>	
+
+        <div>			<!-- Phần nội dung -->
+            <div id="noidung1" style="background: url(../anh/noidung1.jpg) no-repeat; background-size: cover;">      
+            </div>
+            <div id="noidung2">
+                <form>
+                    <label for="fname">Mã nhân viên</label>
+                    <input type="text" id="manv"  placeholder="Nhập mã nhân viên">
+                    <label for="hoten">Họ và tên</label>
+                    <input type="text" id="hoten" placeholder="Nhập họ tên nhân viên">
+
+                    <label for="gioitinh">Giới tính</label>
+                    <input type="text" id="gioitinh" placeholder="Nhập giới tính">
+                    <label for="ngaysinh">Ngày sinh</label>
+                    <input type="date" id="ngaysinh" ><br><br>
+
+                    <label for="lname">Số điện thoại</label>
+                    <input type="text" id="sdt"  placeholder="Số điện thoại">
+                    <label for="lname">Chức vụ</label>
+                    <input type="text" id="chucvu" placeholder="Chức vụ">
+                    <label for="lname">Lương</label>
+                    <input type="text" id="luong"  placeholder="Lương">
+                    <center>
+                        <button onclick ="themNV()" style="background-color: #008CBA" >Thêm</button>
+                        <button onclick ="suaTT()" style="background-color: #e7e7e7">Sửa</button>
+                        <button onclick ="xoaNV()" style="background-color: #f44336">Xóa</button>
+                    </center>
+                    <div id="thongbao"></div>
+                </form>
+            </div>
+            <script>hienthiNV()</script>
+            <script>
+                if (sessionStorage.username == "undefined") {
+                    alert("Ban chua dang nhap!");
+                    window.location.href = "dangnhap.html";
+                }
+                 document.getElementById("usernamelogin").innerHTML = "Xin chào " + sessionStorage.username;
+            </script>
+    </body>
+
+</html>

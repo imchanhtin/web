@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quản lý Sinh Viên</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/qlsv.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <script src="jquery-3.2.1.min.js"></script>
+        <script>
+            var xmlhttp = new XMLHttpRequest();
+            var thongdieps;
+            function nhapTT() {
+                var masv = document.getElementById("masv").value;
+                var hoten = document.getElementById("hoten").value;
+                var gioitinh = document.getElementById("gioitinh").value;
+                var ngaysinh = document.getElementById("ngaysinh").value;
+                var sdt = document.getElementById("sdt").value;
+                var lop = document.getElementById("lop").value;
+                if (masv == "" || hoten == "" || gioitinh == "" || ngaysinh == "" || sdt == "" || lop == "") {
+                    alert("Bạn chưa nhập đủ thông tin");
+                } else {
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                    xmlhttp.open("get", "../jsp/nhapTT.jsp?masv=" + masv + "&hoten=" + hoten + "&gioitinh=" + gioitinh + "&ngaysinh=" + ngaysinh + "&sdt=" + sdt + "&lop=" + lop, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                }
+            }
+            function xemtt1SV(masv) {
+                sessionStorage.svdangsua = masv;
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                xmlhttp.open("get", "../jsp/hienthi1SV.jsp?masv=" + masv, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                //Nhận thông báo từ file JSP gửi về
+
+                document.getElementById("masv").setAttribute("value", thongdieps[0].masv);
+                document.getElementById("hoten").setAttribute("value", thongdieps[0].hoten);
+                document.getElementById("gioitinh").setAttribute("value", thongdieps[0].gioitinh);
+                document.getElementById("ngaysinh").setAttribute("value", thongdieps[0].ngaysinh);
+                document.getElementById("sdt").setAttribute("value", thongdieps[0].sdt);
+                document.getElementById("lop").setAttribute("value", thongdieps[0].lop);
+
+            }
+
+            function xemthongdiep()
+            {
+                var table = "";
+                xmlhttp.open("get", "../jsp/hienttSV.jsp", false);
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                table += "<table border=1>";
+                table += "<tr><th></th><th><th>Mã SV</th><th>Họ Tên</th><th>Giới Tính</th>"
+                        + "<th>Ngày Sinh</th><th>Số Điện Thoại</th><th>Lớp</th></tr>";
+                for (var i = 0; i < thongdieps.length; i++) {
+                    table += "<tr>" + "<td ><input type=\"checkbox\" name=\"check\" id=\"" + thongdieps[i].masv + "\"> </td>" + "<td ><input type=\"radio\" name=\"radio\" value=\"" + thongdieps[i].masv + "\" onclick=\"xemtt1SV('" + thongdieps[i].masv + "')\"> </td>"
+                            + "<td >" + thongdieps[i].masv + "</td>"
+                            + "<td >" + thongdieps[i].hoten + "</td>"
+                            + "<td>" + thongdieps[i].gioitinh + "</td>"
+                            + "<td>" + thongdieps[i].ngaysinh + "</td>"
+                            + "<td>" + thongdieps[i].sdt + "</td>"
+                            + "<td>" + thongdieps[i].lop + "</td>"
+                }
+                table += "</table>";
+                document.getElementById("noidung1").innerHTML = table;
+            }
+            function xoaSV() {
+                if (sessionStorage.userid == "0")
+                    alert("Ban khong co quyen xoa!");
+                else if (sessionStorage.userid == "1") {
+                    var DSSV = document.getElementsByName("check");
+                    var DSString = "";
+                    var dem = 0;
+                    for (var i = 0; i < DSSV.length; i++)
+                    {
+                        if (DSSV[i].checked)
+                        {
+                            if (dem == 0)
+                            {
+                                DSString += "masv" + dem + "=" + DSSV[i].id.trim();
+                            } else
+                            {
+                                DSString += "&masv" + dem + "=" + DSSV[i].id.trim();
+                            }
+                            dem++;
+                        }
+                    }
+                    DSString += "&dem=" + dem;
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                    xmlhttp.open("get", "../jsp/xoaTT.jsp?" + DSString, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                   
+                }
+            }
+            function suaTT()
+            {
+                var masv = document.getElementById("masv").value;
+                var hoten = document.getElementById("hoten").value;
+                var gioitinh = document.getElementById("gioitinh").value;
+                var ngaysinh = document.getElementById("ngaysinh").value;
+                var sdt = document.getElementById("sdt").value;
+                var lop = document.getElementById("lop").value;
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                xmlhttp.open("get", "../jsp/suaSV.jsp?masv=" + masv + "&masvcu=" + sessionStorage.svdangsua + "&hoten=" + hoten + "&gioitinh=" + gioitinh + "&ngaysinh=" + ngaysinh + "&sdt=" + sdt + "&lop=" + lop, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+                //Nhận thông báo từ file JSP gửi về            
+                alert(xmlhttp.responseText.trim());
+            }
+            function dangxuat() {
+                sessionStorage.username = "undefined";
+                sessionStorage.userid = "-1";
+            }
+        </script>
+    </head>
+    <body>
+        <div id="main">
+            <div>				<!-- Phần header -->
+                <div id="header1">     
+                    <span><a href="trangchu.html"><button id="back"></button></a></span>
+                    <span><p id="eff6">Thông tin sinh viên</p></span>           
+                </div>
+                <div id="header2">
+                    <div id="usernamelogin" style="float: left; margin-top: 20px;">Xin chào</div>  <!-- Hiển thị tên tài khoản đăng nhập -->
+                    <div class="topnav" id="myTopnav" style="float: right;">
+                        <a href="dangnhap.html" onclick="dangxuat()">Đăng xuất</a>	  		
+                    </div>
+                </div>
+            </div>	
+
+            <div>			<!-- Phần nội dung -->
+                <div id="noidung1" style="overflow: scrollbar; overflow-x: hidden;">
+                    <script>xemthongdiep()</script>
+                </div>
+                <div id="noidung2">
+                    <form>
+                        <label for="fname" style="margin-top: 30px;">Mã Sinh Viên</label>
+                        <input type="text" id="masv"  placeholder="Nhập mã sinh viên" value="" style="margin-top: 10px;">
+                        <label for="hoten">Họ và tên</label>
+                        <input type="text" id="hoten"  placeholder="Nhập họ tên sinh viên">
+                        <label for="gioitinh">Giới tính</label>
+                        <input type="text" id="gioitinh"  placeholder="Nhập giới tính">
+                        <label for="ngaysinh">Ngày sinh</label>
+                        <input type="date" id="ngaysinh" ><br><br>
+                        <label for="sdt">Số điện thoại</label>    
+                        <input type="text" id="sdt" placeholder="Số điện thoại">
+                        <label for="lop">Lớp</label>
+                        <input type="text" id="lop"  placeholder="Lớp">
+                        <center>
+                            <button onclick =" nhapTT()" style="background-color: #008CBA; margin-top: 90px;" >Thêm</button> 
+                            <button onclick =" suaTT()" style="background-color: #e7e7e7">Sửa</button>
+                            <button onclick =" xoaSV()" style="background-color: #f44336">Xóa</button>
+                        </center>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            if (sessionStorage.username == "undefined") {
+                alert("Ban chua dang nhap!");
+                window.location.href = "dangnhap.html";
+            }
+            document.getElementById("usernamelogin").innerHTML = "Xin chào " + sessionStorage.username;
+        </script>
+    </body>
+</html>

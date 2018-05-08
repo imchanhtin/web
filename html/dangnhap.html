@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html >
+    <head>
+        <title>Quản lý Kí túc xá PTIT</title>
+        <meta charset="utf-8"> 		<!-- Hiển thị được tiếng việt -->
+        <link rel="stylesheet" type="text/css" href="../css/dangnhap.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <script>
+            function dangnhap(){
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                if(username === "" || password === ""){
+                   alert("Bạn chưa nhập Username hoặc Password!"); 
+                }
+                else{
+                   
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.open("get","../jsp/dangnhap.jsp?username="
+                            +username+"&password="+password,false);
+                    xmlhttp.send();
+                    var role = xmlhttp.responseText.trim();
+                    
+                    
+                    if (role == "0"){
+                        //Doi tuong luu bien username khi dang nhap thanh cong
+                        //tren may cua client tren 1 phien lam viec
+                        sessionStorage.username = username;
+                        sessionStorage.userid = role;
+                        xmlhttp.open("get","trangchu.html",false);
+                        xmlhttp.send();
+                        document.write(xmlhttp.responseText);
+                    }
+                    if (role =="1"){
+                        sessionStorage.username = username;
+                        sessionStorage.userid = role;
+                        xmlhttp.open("get","trangchu.html",false);
+                        xmlhttp.send();
+                        document.write(xmlhttp.responseText);
+                    }
+                    if (role == "-1")
+                        alert("Bạn đăng nhập sai");
+                }
+            }
+
+        </script>
+
+    </head>
+
+    <body>
+        <div class="cont">
+            <div class="demo">
+                <div class="login">
+                    <center><img src="../anh/logo.ico"/></center>
+                    <div class="login__form">
+                        <div class="login__row">
+                            <svg class="login__icon name svg-icon" viewBox="0 0 20 20">
+                            <path d="M0,20 a10,8 0 0,1 20,0z M10,0 a4,4 0 0,1 0,8 a4,4 0 0,1 0,-8" />
+                            </svg>
+                            <input type="text" id="username" class="login__input name" placeholder="Tên Đăng nhập" required="" />
+                        </div>
+                        <div class="login__row">
+                            <svg class="login__icon pass svg-icon" viewBox="0 0 20 20">
+                            <path d="M0,20 20,20 20,8 0,8z M10,13 10,16z M4,8 a6,8 0 0,1 12,0" />
+                            </svg>
+                            <input type="password" id="password" class="login__input pass" placeholder="Mật khẩu" required="" />
+                        </div>
+                        <button type="submit" class="login__submit" onclick="dangnhap()" >Đăng nhập</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

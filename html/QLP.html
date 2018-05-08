@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quản lý Phòng</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/qlsv.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <script>
+            var xmlhttp = new XMLHttpRequest();
+            var thongdieps;
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+            }
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+            }
+            function xemthongdiep()
+            {
+                var table = "";
+                xmlhttp.open("get", "../jsp/hienthiphong.jsp", false);
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                table += "<table border=1>";
+                table += "<tr><th></th><th><th>Số Phòng</th><th>Mã Khu Nhà</th><th>Số Lượng Sinh Viên Tối Đa</th>"
+                        + "<th>Hiện Có</th><th>Ghi Chú</th></tr>";
+                for (var i = 0; i < thongdieps.length; i++) {
+                    table += "<tr>" + "<td ><input type=\"checkbox\" name=\"check\" id=\"" + thongdieps[i].sophong + "\"> </td>" + "<td ><input type=\"radio\" name=\"radio\" value=\"" + thongdieps[i].sophong + "\" onclick=\"xemtt1phong('" + thongdieps[i].sophong + "')\"> </td>"
+                            + "<td >" + thongdieps[i].sophong + "</td>"
+                            + "<td >" + thongdieps[i].makhunha + "</td>"
+                            + "<td>" + thongdieps[i].soluongSV + "</td>"
+                            + "<td>" + thongdieps[i].hienco + "</td>"
+                            + "<td>" + thongdieps[i].ghichu + "</td>"
+                }
+                table += "</table>";
+                document.getElementById("noidung1").innerHTML = table;
+            }
+            function nhapTT() {
+                var sophong = document.getElementById("sophong").value;
+                var makhunha = document.getElementById("makhunha").value;
+                var soluongSV = document.getElementById("soluongSV").value;
+                var hienco = document.getElementById("hienco").value;
+                var ghichu = document.getElementById("ghichu").value;
+                if (sophong == "" || makhunha == "" || soluongSV == "" || hienco == "" || ghichu == "") {
+                    alert("Bạn chưa nhập đủ thông tin");
+                } else {
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                    xmlhttp.open("get", "../jsp/themphong.jsp?sophong=" + sophong + "&makhunha=" + makhunha + "&soluongSV=" + soluongSV + "&hienco=" + hienco + "&ghichu=" + ghichu, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                }
+            }
+            function xoaphong() {
+                if (sessionStorage.userid == "0") {
+                    alert("Ban khong co quyen xoa!");
+                } else if (sessionStorage.userid == "1") {
+                    var DSP = document.getElementsByName("check");
+                    var DSString = "";
+                    var dem = 0;
+                    for (var i = 0; i < DSP.length; i++)
+                    {
+                        if (DSP[i].checked)
+                        {
+                            if (dem == 0)
+                            {
+                                DSString += "sophong" + dem + "=" + DSP[i].id.trim();
+                            } else
+                            {
+                                DSString += "&sophong" + dem + "=" + DSP[i].id.trim();
+                            }
+                            dem++;
+                        }
+                    }
+                    DSString += "&dem=" + dem;
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                    xmlhttp.open("get", "../jsp/xoaphong.jsp?" + DSString, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                }
+            }
+            function xemtt1phong(sophong) {
+                sessionStorage.sophongdangsua = sophong;
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                xmlhttp.open("get", "../jsp/hienthi1phong.jsp?sophong=" + sophong, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+
+                thongdieps = JSON.parse(xmlhttp.responseText);
+
+                document.getElementById("sophong").setAttribute("value", thongdieps[0].sophong);
+                document.getElementById("makhunha").setAttribute("value", thongdieps[0].makhunha);
+
+                document.getElementById("soluongSV").setAttribute("value", thongdieps[0].soluongSV);
+                document.getElementById("hienco").setAttribute("value", thongdieps[0].hienco);
+                document.getElementById("ghichu").setAttribute("value", thongdieps[0].ghichu);
+
+            }
+            function suaphong()
+            {
+                var sophong = document.getElementById("sophong").value;
+                var makhunha = document.getElementById("makhunha").value;
+                var soluongSV = document.getElementById("soluongSV").value;
+                var hienco = document.getElementById("hienco").value;
+                var ghichu = document.getElementById("ghichu").value;
+
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                xmlhttp.open("get", "../jsp/suaphong.jsp?sophong=" + sophong + "&sophongcu=" + sessionStorage.sophongdangsua + "&makhunha=" + makhunha + "&soluongSV=" + soluongSV + "&hienco=" + hienco + "&ghichu=" + ghichu, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+                //Nhận thông báo từ file JSP gửi về
+
+                alert(xmlhttp.responseText.trim());
+            }
+            function dangxuat() {
+                sessionStorage.username = "undefined";
+                sessionStorage.userid = "-1";
+            }
+        </script>
+        <style type="text/css">
+
+        </style>
+    </head>
+    <body>
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Thông tin phòng;&times;</a>
+            <a href="QLSV.html">Quản lý Sinh Viên</a>
+            <a href="QLHD.html">Quản lý Hợp Đồng</a>
+            <a href="QLP.html">Quản lý Phòng</a>
+        </div>
+        <div>				<!-- Phần header -->
+            <div id="header1">
+                <span><a href="trangchu.html"><button id="back"></button></a></span>
+                <span><p id="eff6">Thông tin phòng</p></span>
+            </div>
+            <div id="header2">
+                <div id="usernamelogin" style="float: left; margin-top: 20px;">Xin chào</div>  
+                <div class="topnav" id="myTopnav" style="float: right;">
+                    <a href="dangnhap.html" onclick="dangxuat()">Đăng xuất</a>
+                </div>
+            </div>
+        </div>	
+
+        <div>			<!-- Phần nội dung -->
+            <div id="noidung1" style="overflow: scrollbar; overflow-x: hidden;">                
+
+            </div>
+
+
+            <div id="noidung2">
+                <form>
+                    <label for="fname">Số phòng</label>
+                    <input type="text" id="sophong"  placeholder="Nhập số phòng...">
+                    <label for="fname">Mã khu nhà</label>
+                    <input type="text" id="makhunha" placeholder="Nhập mã số khu nhà...">				    
+                    <label for="fname">Số lượng sinh viên tối đa</label>
+                    <input type="text" id="soluongSV" placeholder="Số lượng sinh viên tối đa trong phòng">
+                    <label for="fname">Hiện có</label>
+                    <input type="text" id="hienco" placeholder="Số lượng sinh viên hiện tại trong phòng...">
+                    <label for="fname">Ghi chú</label>
+                    <input type="text" id="ghichu" placeholder="Tình trạng hiện tại">
+                    <center>
+                        <button onclick="nhapTT()" style="background-color: #008CBA; margin-top: 80px" >Thêm</button>
+                        <button onclick="suaphong()" style="background-color: #e7e7e7">Sửa</button>
+                        <button onclick="xoaphong()" style="background-color: #f44336">Xóa</button>
+                    </center>
+                </form>
+            </div>
+
+            <div>
+            </div>
+            <script>xemthongdiep()</script>
+            <script>
+                function openNav() {
+                    document.getElementById("mySidenav").style.width = "250px";
+                    document.getElementById("main").style.marginLeft = "250px";
+                    document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
+                }
+
+                function closeNav() {
+                    document.getElementById("mySidenav").style.width = "0";
+                    document.getElementById("main").style.marginLeft = "0";
+                    document.body.style.backgroundColor = "white";
+                }
+            </script>
+            <script>
+                if (sessionStorage.username == "undefined") {
+                    alert("Ban chua dang nhap!");
+                    window.location.href = "dangnhap.html";
+                }
+                 document.getElementById("usernamelogin").innerHTML = "Xin chào " + sessionStorage.username;
+            </script>
+    </body>
+
+</html>

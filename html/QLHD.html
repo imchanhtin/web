@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quản lý Hợp Đồng</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/qlsv.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <script>
+            var xmlhttp = new XMLHttpRequest();
+            var thongdieps;
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+            }
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+            }
+            function hienthihopdong() {
+                var table = "";
+                xmlhttp.open("get", "../jsp/hienthihopdong.jsp", false);
+                xmlhttp.send();
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                table += "<table border=1>";
+                table += "<tr><th></th><th><th>Mã Hợp Đồng</th><th>Mã Sinh Viên</th><th>Mã Nhân Viên</th>"
+                        + "<th>Số Phòng</th><th>Ngày Bắt Đầu</th><th>Ngày Kết Thúc</th></tr>";
+                for (var i = 0; i < thongdieps.length; i++) {
+                    table += "<tr>" + "<td ><input type=\"checkbox\" name=\"check\" id=\"" + thongdieps[i].mahopdong + "\"> </td>" + "<td ><input type=\"radio\" name=\"radio\" value=\"" + thongdieps[i].mahopdong + "\" onclick=\"xemtt1hopdong('" + thongdieps[i].mahopdong + "')\"> </td>"
+                            + "<td >" + thongdieps[i].mahopdong + "</td>"
+                            + "<td >" + thongdieps[i].masv + "</td>"
+                            + "<td>" + thongdieps[i].manv + "</td>"
+                            + "<td>" + thongdieps[i].sophong + "</td>"
+                            + "<td>" + thongdieps[i].ngaybd + "</td>"
+                            + "<td>" + thongdieps[i].ngaykt + "</td>"
+                }
+                table += "</table>";
+                document.getElementById("noidung1").innerHTML = table;
+            }
+            function themhopdong() {
+                var mahopdong = document.getElementById("mahopdong").value;
+                var masv = document.getElementById("masv").value;
+                var manv = document.getElementById("manv").value;
+                var sophong = document.getElementById("sophong").value;
+                var ngaybd = document.getElementById("ngaybd").value;
+                var ngaykt = document.getElementById("ngaykt").value;
+
+                if (mahopdong == "" || masv == "" || manv == "" || sophong == "" || ngaybd == "" || ngaykt == "") {
+                    alert("Bạn chưa nhập đủ thông tin");
+                } else {
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                    xmlhttp.open("get", "../jsp/themhopdong.jsp?mahopdong=" + mahopdong + "&masv=" + masv + "&manv=" + manv + "&sophong=" + sophong + "&ngaybd=" + ngaybd + "&ngaykt=" + ngaykt, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về              
+                    alert(xmlhttp.responseText.trim());
+                }
+            }
+            function xoahopdong() {
+                if (sessionStorage.userid == "0") {
+                    alert("Ban khong co quyen xoa!");
+                } else if (sessionStorage.userid == "1") {
+                    var DSHD = document.getElementsByName("check");
+                    var DSString = "";
+                    var dem = 0;
+                    for (var i = 0; i < DSHD.length; i++)
+                    {
+                        if (DSHD[i].checked)
+                        {
+                            if (dem == 0)
+                            {
+                                DSString += "mahopdong" + dem + "=" + DSHD[i].id.trim();
+                            } else
+                            {
+                                DSString += "&mahopdong" + dem + "=" + DSHD[i].id.trim();
+                            }
+                            dem++;
+                        }
+                    }
+                    DSString += "&dem=" + dem;
+                    var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                    //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                    xmlhttp.open("get", "../jsp/xoahopdong.jsp?" + DSString, false);
+                    //gửi yêu cầu
+                    xmlhttp.send();
+                    //Nhận thông báo từ file JSP gửi về
+                    alert(xmlhttp.responseText.trim());
+                    
+                }
+            }
+            function xemtt1hopdong(mahopdong) {
+                sessionStorage.hopdongdangsua = mahopdong;
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapdiem.jsp
+                xmlhttp.open("get", "../jsp/hienthi1hopdong.jsp?mahopdong=" + mahopdong, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+
+                thongdieps = JSON.parse(xmlhttp.responseText);
+                //Nhận thông báo từ file JSP gửi về
+              
+                document.getElementById("mahopdong").setAttribute("value", thongdieps[0].mahopdong);
+                document.getElementById("masv").setAttribute("value", thongdieps[0].masv);              
+                document.getElementById("manv").setAttribute("value", thongdieps[0].manv);
+                document.getElementById("sophong").setAttribute("value", thongdieps[0].sophong);
+                document.getElementById("ngaybd").setAttribute("value", thongdieps[0].ngaybd);
+                document.getElementById("ngaykt").setAttribute("value", thongdieps[0].ngaykt);
+
+            }
+            function suahopdong()
+            {
+                var mahopdong = document.getElementById("mahopdong").value;
+                var masv = document.getElementById("masv").value;
+                var manv = document.getElementById("manv").value;
+                var sophong = document.getElementById("sophong").value;
+                var ngaybd = document.getElementById("ngaybd").value;
+                var ngaykt = document.getElementById("ngaykt").value;
+
+                var xmlhttp = new XMLHttpRequest(); //dung de gui DL den webserver
+                //mo kết nối đến Webserver voi yeu cau chay nhapTT.jsp
+                xmlhttp.open("get", "../jsp/suahopdong.jsp?mahopdong=" + mahopdong + "&mahopdongcu=" + sessionStorage.hopdongdangsua + "&masv=" + masv + "&manv=" + manv + "&sophong=" + sophong + "&ngaybd=" + ngaybd + "&ngaykt=" + ngaykt, false);
+                //gửi yêu cầu
+                xmlhttp.send();
+                //Nhận thông báo từ file JSP gửi về
+                alert(xmlhttp.responseText.trim());
+            }
+            function dangxuat() {
+                sessionStorage.username = "undefined";
+                sessionStorage.userid = "-1";
+            }
+        </script>
+
+    </head>
+    <body>
+        <div>				<!-- Phần header -->
+            <div id="header1">
+                <span><a href="trangchu.html"><button id="back"></button></a></span>
+                
+                <span><p id="eff6">Thông tin hợp đồng</p></span>
+            </div>
+            <div id="header2">
+                <div id="usernamelogin" style="float: left; margin-top: 20px; font: bolder; ">Xin chào</div>  
+                <div class="topnav" id="myTopnav" style="float: right;">
+                    <a href="dangnhap.html" onclick="dangxuat()">Đăng xuất</a>
+                </div>
+            </div>
+        </div>	
+
+        <div>			<!-- Phần nội dung -->
+            <div id="noidung1" style="overflow: scrollbar; overflow-x: hidden;">              
+            </div>
+            <div id="noidung2">
+                <form>
+                    <br>
+                    <label for="fname" style="margin-top: 50px;">Mã hợp đồng</label><br>
+                    <input type="text" id="mahopdong" placeholder="Nhập mã hợp đồng..."><br><br>
+                    <label for="fname">Mã sinh viên</label>
+                    <input type="text" id="masv" placeholder="Nhập mã số sinh viên..."><br><br>
+                    <label for="fname">Mã nhân viên</label>
+                    <input type="text" id="manv"  placeholder="Nhập mã số nhân viên..."><br><br>
+                    <label for="fname">Số phòng</label>
+                    <input type="text" id="sophong" placeholder="Nhập số phòng..."><br><br>
+                    <label for="fname">Ngày bắt đầu</label>
+                    <input type="date" id="ngaybd" placeholder="Ngày bắt đầu">
+                    <label for="fname">Ngày kết thúc</label>
+                    <input type="date" id="ngaykt" placeholder="Ngày kết thúc">
+                    <center>
+                        <button onclick="themhopdong()" style="background-color: #008CBA; margin-top: 80px;" >Thêm</button>
+                        <button onclick="suahopdong()" style="background-color: #e7e7e7">Sửa</button>
+                        <button onclick="xoahopdong()" style="background-color: #f44336">Xóa</button>
+                    </center>
+                </form>
+            </div>
+            <script>hienthihopdong()</script>
+            <script>
+                if (sessionStorage.username == "undefined") {
+                    alert("Ban chua dang nhap!");
+                    window.location.href = "dangnhap.html";
+                }
+                 document.getElementById("usernamelogin").innerHTML = "Xin chào " + sessionStorage.username;
+            </script>
+    </body>
+
+</html>

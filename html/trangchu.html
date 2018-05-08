@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="../css/trangchu.css">
+        <link rel="icon" href="../anh/logo.ico">
+        <title>Quản lý Ký túc xá</title>
+        <script>
+            function openNav() {
+                document.getElementByIdById("main").style.marginLeft = "250px";
+
+                document.getElement("mySidenav").style.width = "250px";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+            }
+            function dangxuat() {
+                sessionStorage.username = "undefined";
+                sessionStorage.userid = "-1";
+            }
+        </script>
+    </head>
+    <body>
+
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            < <a href="QLSV.html">Sinh viên</a>
+            <a href="QLNV.html">Nhân Viên</a>
+            <a href="QLHD.html">Hợp đồng</a>
+            <a href="QLP.html">Phòng</a>
+        </div>
+
+        <div id="main"> 
+            <div id="header">
+                <div>
+                    <h1 id="usernamelogin" style="text-align: center; color: white;">Xin chào</h1>
+                </div>
+                <div class="dangxuat" id="myTopnav" style="float: right; border-radius: 60%; float: right;">              
+                    <a href="dangnhap.html" onclick="dangxuat()">Đăng xuất</a>          
+                </div>
+            </div>
+            <a id="QLNV" href="QLNV.html"><button class="nut" style=" background: url(../anh/nhanvien.png); background-size: 100% 100%;" >Quản Lý Nhân viên</button></a>
+            <a href="QLSV.html"><button class="nut" style="background: url(../anh/sinhvien.png); background-size: 100% 100%;">Quản Lý Sinh viên</button></a><br>
+            <a href="QLP.html"><button class="nut" style="background: url(../anh/phong.png); background-size: 100% 100%; ">Quản Lý Phòng</button></a>
+            <a href="QLHD.html"><button class="nut" style="background: url(../anh/hopdong.png); background-size: 100% 100%;">Quản Lý Hợp Đồng</button></a>
+        </div>
+        <script>
+            if(sessionStorage.username=="undefined"){
+                alert("Ban chua dang nhap!");
+                window.location.href = "dangnhap.html";
+            }
+            if (sessionStorage.userid != "1")
+            {
+                var QLNVbutton = document.getElementById("QLNV");
+                QLNVbutton.setAttribute("href", "#");
+            }
+            document.getElementById("usernamelogin").innerHTML = "Xin chào " + sessionStorage.username;
+            
+        </script>
+    </body>
+</html> 
